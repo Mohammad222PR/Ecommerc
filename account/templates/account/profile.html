@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'main.html' %}
     {% block content %}
 
        <div class="card">
@@ -17,7 +17,7 @@
         <div class="col-md-2">
                 <a href="{%url 'account:user_profileupdate' user.id %}"    class="btn btn-info" >Update Profile</a>
                 
-
+                <a href="{% url 'account:user_logout' %}" class="btn btn-danfer">Logout</a>
             </div>
                 {% endif %}
     </div>

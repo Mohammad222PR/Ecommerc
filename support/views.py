@@ -2,20 +2,23 @@ from django.shortcuts import render, redirect
 from django.views import View
 from .forms import TicketForm, TicketAnswerForm
 from .models import *
+from store.models import *
+
 # Create your views here.
 
 
 
 class TicketView(View):
     template_name = 'support/ticket.html'
-    def get(self, request):
-        ticket = Ticket.objects.filter(user = request.user)
-
+    
+    def get(self, request, user_id):
+        # فیلتر کردن تیکت‌های مربوط به کاربر جاری
+        tickets = User.objects.get(id=user_id)
+        
         context = {
-            'ticket':ticket,
+            'tickets': tickets,
         }
-        return render(request,self.template_name, context)
-
+        return render(request, self.template_name, context)
 
 class DetailTicket(View):
     def get(self, request, t_id):
@@ -34,7 +37,7 @@ class AddTicketView(View):
         if request.user.is_authenticated:
             return redirect('home:home')
         return super().dispatch(request, *args, **kwargs)
-    
+        
     def get(self, request):
         form = self.form_class()
 

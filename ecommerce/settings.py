@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
     'about.apps.AboutConfig',
     'account.apps.AccountConfig',
+    'grouping.apps.GroupingConfig',
+    'support.apps.SupportConfig',
 
 ]
 

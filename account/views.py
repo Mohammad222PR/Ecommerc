@@ -8,6 +8,7 @@ from .forms import UserSingupForm, UserLoginForm,UserUpdateProfileForm
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 from store.models import Transaction
+from store.models import Customer
 # Create your views here.
 
 # Start Singup View.
@@ -18,7 +19,7 @@ class UserSingupView(View):
     
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('home:home')
+            return redirect('store')
         return super().dispatch(request, *args, **kwargs)
     
     def get(self,request):
@@ -30,10 +31,12 @@ class UserSingupView(View):
         if form.is_valid():
             cd = form.cleaned_data
             user = User.objects.create_user(cd['username'],cd['email'], cd['password1'])
+          
             user = authenticate(request, username = cd['username'], password = cd['password1'])
             login(request,user)
+            
             messages.success(request,'Youre account created')
-            return redirect('home:home')
+            return redirect('store')
         return render(request,self.template_name,{'form':form})
     
 # End Singup View.
@@ -46,7 +49,7 @@ class UserLoginView(View):
 
     def dispatch(self, request, *args ,**kwargs):
         if request.user.is_authenticated:
-            return redirect('home:home')
+            return redirect('store')
         return super().dispatch(request, *args, **kwargs)
     
     def get(self,request):
@@ -61,7 +64,7 @@ class UserLoginView(View):
             if user is not None:
                 login(request,user)
                 messages.success(request,'Youre account created')
-                return redirect('home:home')
+                return redirect('store')
             messages.error(request,'youre name or pass is wrong try again','warning')
         return render(request,self.template_name,{'form':form})
     
@@ -69,14 +72,13 @@ class UserLogoutView(LoginRequiredMixin,View):
     def get(self,request):
         logout(request)
         messages.success(request,'you are logout')
-        return redirect('home:home')
+        return redirect('store')
     
 
 class UserProfileView(View):
     def get(self, request,user_id):
         user = User.objects.get(id = user_id)
-        posts = Post.objects.filter(user = user)
-        return render(request, 'account/profile.html', {'user': user , 'posts':posts})
+        return render(request, 'account/profile.html', {'user': user })
     
     
 class UserUpdateProfileView(LoginRequiredMixin, View):

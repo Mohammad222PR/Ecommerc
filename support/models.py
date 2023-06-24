@@ -12,6 +12,6 @@ class Ticket(models.Model):
     def __str__(self):
         return self.user
 class TicketAnswer(models.Model):
-    ticket = models.ForeignKey(Ticket)
-    name = models.ForeignKey(User)
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    name = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.TextField(max_length=200)
