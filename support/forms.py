@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ticket
+from .models import Ticket, TicketAnswer
 
 class TicketForm(forms.ModelForm):
     class Meta:
@@ -8,3 +8,12 @@ class TicketForm(forms.ModelForm):
 
     images = forms.ImageField(required=False)
     
+class TicketAnswerForm(forms.ModelForm):
+    class Meta:
+        model = TicketAnswer
+        fields = ['ticket', 'body']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['ticket'].widget = forms.HiddenInput()
+        self.fields['body'].widget = forms.Textarea()

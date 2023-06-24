@@ -1,0 +1,10 @@
+{% extends 'main.html' %}
+{% block content %}
+	<h1>Singup</h1>
+		<form action="" method="post" class="col-md-2" enctype="multipart/form-data" novalidate>
+			{% csrf_token %}
+			{{ form }}
+			<input type="submit" value="Singup">
+
+		</form>
+{% endblock %}

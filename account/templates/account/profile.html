@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+    {% block content %}
+
+       <div class="card">
+        <h1>Profile</h1>
+        {% if user.avatar %}
+        <img src="{{ user.avatar.url }}" width="100" height="100" style="border-radius: 50%;" alt="Avatar">   
+        {% endif %}
+        <p class="card-body"> <p>bio : {{user.bio}}</p> <br>  <p>username : {{user.username}} <br> email : {{user.email}}</p></p> 
+        <div class="card">
+            
+          
+            
+        
+        {% if request.user.id == user.id %}
+        
+        <div class="col-md-2">
+                <a href="{%url 'account:user_profileupdate' user.id %}"    class="btn btn-info" >Update Profile</a>
+                
+
+            </div>
+                {% endif %}
+    </div>
+    {% endblock %}

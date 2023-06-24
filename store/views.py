@@ -85,34 +85,50 @@ def updateItem(request):
 
 	return JsonResponse('Item was added', safe=False)
 
-def processOrder(request):
-	transaction_id = datetime.datetime.now().timestamp()
-	data = json.loads(request.body)
-
-	if request.user.is_authenticated:
-		customer = request.user.customer
-		order, created = Order.objects.get_or_create(customer=customer, complete=False)
-	else:
-		customer, order = guestOrder(request, data)
-
-	total = float(data['form']['total'])
-	order.transaction_id = transaction_id
-
-	if total == order.get_cart_total:
-		order.complete = True
-	order.save()
-
-	if order.shipping == True:
-		ShippingAddress.objects.create(
-		customer=customer,
-		order=order,
-		address=data['shipping']['address'],
-		city=data['shipping']['city'],
-		state=data['shipping']['state'],
-		zipcode=data['shipping']['zipcode'],
-		)
-
-	return JsonResponse('Payment submitted..', safe=False)
-
 from django.http import JsonResponse
+from .models import Order, OrderItem, ShippingAddress, Transaction
+import json
+import datetime
 
+def processOrder(request):
+    transaction_id = datetime.datetime.now().timestamp()
+    data = json.loads(request.body)
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    else:
+        customer, order = guestOrder(request, data)
+
+    total = float(data['form']['total'])
+    order.transaction_id = transaction_id
+
+    if total == order.get_cart_total():
+        order.complete = True
+    order.save()
+
+    if order.shipping == True:
+        ShippingAddress.objects.create(
+            customer=customer,
+            order=order,
+            address=data['shipping']['address'],
+            city=data['shipping']['city'],
+            state=data['shipping']['state'],
+            zipcode=data['shipping']['zipcode'],
+        )
+
+    # Save transaction
+    for item in order.orderitem_set.all():
+        transaction = Transaction.objects.create(
+            user=customer.user,
+            product=item.product,
+            amount=item.get_total(),
+        )
+        transaction.save()
+
+    return JsonResponse('Payment submitted..', safe=False)
+
+def Search(request):
+    search = request.GET.get('search')
+    product_list = Product.objects.filter(name__iexact=search)
+    return render(request, 'store/product_list.html', {'product_list': product_list})

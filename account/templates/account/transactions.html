@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <div class="card">
+        <h1>Transactions</h1>
+        {% if transactions %}
+            <ul>
+                {% for transaction in transactions %}
+                    <li>{{ transaction.product.name }} - {{ transaction.amount }} - {{ transaction.date }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No transactions found.</p>
+        {% endif %}
+    </div>
+{% endblock %}
