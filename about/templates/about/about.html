@@ -1,0 +1,51 @@
+{% extends 'main.html' %}
+    {% block content %}
+    {% load static %}
+    <section id="about" class="py-5">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6 order-2 order-lg-1">
+              <img src="{% static 'images/onlie.png' %}" class="img-fluid mb-4" alt="About Us">
+            </div>
+            <div class="col-lg-6 order-1 order-lg-2">
+              <h2 class="font-weight-bold mb-4">About Us</h2>
+              <p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel felis metus. Nulla facilisi. Maecenas pellentesque, ante ac convallis maximus, lectus mauris malesuada magna, sit amet ullamcorper neque tortor id nunc. Suspendisse potenti. Proin vel dignissim felis, vel fermentum velit. Etiam quis nisl a tellus consequat lacinia. Nulla facilisi. Vivamus euismod, est eget bibendum bibendum, nibh magna cursus ipsum, sit amet luctus purus lectus ac dui. Praesent vel mi sed metus scelerisque ornare. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec quis nisl nec quam molestie bibendum.</p>
+              <a href="{% url 'store' %}" class="btn btn-primary">Go to Store</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <style>
+        #about {
+  background-color: #f8f9fa;
+}
+
+#about img {
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+#about h2 {
+  color: #333;
+}
+
+#about p {
+  color: #555;
+  line-height: 1.5;
+}
+
+#about a {
+  background-color: #007bff;
+  border: none;
+}
+
+@media only screen and (max-width: 768px) {
+  #about {
+    text-align: center;
+  }
+  
+  #about img {
+    margin-bottom: 30px;
+  }
+}
+      </style>
+    {% endblock %}
