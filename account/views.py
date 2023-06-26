@@ -8,7 +8,9 @@ from .forms import UserSingupForm, UserLoginForm,UserUpdateProfileForm
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 from store.models import Transaction
-from store.models import Customer
+from store.utils import *
+from django.db.models import Sum
+
 # Create your views here.
 
 # Start Singup View.
@@ -76,10 +78,21 @@ class UserLogoutView(LoginRequiredMixin,View):
     
 
 class UserProfileView(View):
-    def get(self, request,user_id):
-        user = User.objects.get(id = user_id)
-        return render(request, 'account/profile.html', {'user': user })
-    
+    def get(self, request, user_id):
+        data = cartData(request)
+        order = data['order']
+        cartItems = data['cartItems']
+        user = User.objects.get(id=user_id)
+        
+        # محاسبه جمع تراکنش‌های کاربر
+        
+        return render(request, 'account/profile.html', {
+            'user': user,
+            'cartItems': cartItems,
+            'order': order,
+              # اضافه کردن total_amount به دیکشنری متغیرهای قالب
+        })
+
     
 class UserUpdateProfileView(LoginRequiredMixin, View):
     form_class = UserUpdateProfileForm
@@ -96,16 +109,17 @@ class UserUpdateProfileView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, user_id):
+        data = cartData(request)
+        cartItems = data['cartItems']
         user = User.objects.get(id=user_id)
         form = self.form_class(instance=user)
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'cartItems':cartItems})
 
     def post(self, request, user_id):
         user = User.objects.get(id=user_id)
         form = self.form_class(request.POST,  instance=user)
         if form.is_valid():
             new_user = form.save(commit=False)
-            new_user.bio = form.cleaned_data['bio']
             new_user.save()
             messages.success(request, 'Your profile has been updated', 'success')
             return redirect('account:user_profile', user.id)
@@ -125,10 +139,22 @@ class UserTransactions(ListView):
         user_id = self.kwargs.get('user_id')
         return Transaction.objects.filter(user__id=user_id)
 
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        return render(request, self.template_name, {self.context_object_name: queryset})
-    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = self.kwargs.get('user_id')
+        
+        # محاسبه جمع تراکنش‌های کاربر
+        total_amount = Transaction.objects.filter(user__id=user_id).aggregate(total=Sum('amount'))['total']
+        
+        # دسترسی به سبد خرید و محاسبه تعداد محصولات
+        data = cartData(self.request)
+        cartItems = data['cartItems']
+        
+        context['total_amount'] = total_amount  # اضافه کردن total_amount به دیکشنری متغیرهای قالب
+        context['cartItems'] = cartItems  # اضافه کردن cartItems به دیکشنری متغیرهای قالب
+        return context
+
+
 class PasswordResetView(auth_views.PasswordResetView):
     template_name = 'account/password_reset_form.html'
     success_url = reverse_lazy('account:password_rest_done')

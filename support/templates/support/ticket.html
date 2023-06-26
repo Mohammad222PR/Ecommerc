@@ -1,1 +1,123 @@
-dfs
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+/* Updated styles for tickets */
+.ticket-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ticket-card {
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 40px;
+  margin-bottom: 20px;
+}
+
+.ticket-card-header {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+
+.ticket-card-header h2 {
+  font-size: 24px;
+  color: #333;
+}
+
+.ticket-card-body {
+  margin-bottom: 20px;
+}
+
+.ticket-card-body p {
+  font-size: 18px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.ticket-actions {
+  margin-top: 20px;
+}
+
+.ticket-actions a {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.ticket-actions a:hover {
+  background-color: #0069d9;
+}
+
+.ticket-actions .btn-danger {
+  background-color: #dc3545;
+}
+
+.ticket-actions .btn-danger:hover {
+  background-color: #c82333;
+}
+
+.ticket-actions .btn-info {
+  background-color: #17a2b8;
+}
+
+.ticket-actions .btn-info:hover {
+  background-color: #138496;
+}
+
+.ticket-actions .btn-secondary {
+  background-color: #6c757d;
+}
+
+.ticket-actions .btn-secondary:hover {
+  background-color: #5a6268;
+}
+</style>
+
+
+<div class="ticket-container">
+    {% if tickets %}
+        {% for ticket in tickets %}
+            <div class="ticket-card">
+                <div class="ticket-card-header">
+                    <a href="{% url 'detail_ticket' ticket.id %}"><h2>{{ ticket.title }}</h2></a>
+                </div>
+                <div class="ticket-card-body">
+                    {% if ticket.complete %}
+                        <div class="ticket-status answered">
+                            <span class="btn btn-success">Answered</span>
+                        </div>
+                    {% else %}
+                        <div class="ticket-status pending">
+                            <span class="btn btn-danger">Waiting</span>
+                        </div>
+                    {% endif %}
+                    <p>{{ ticket.content }}</p>
+                </div>
+                {% if not ticket.complete %}
+                    <a href="{% url 'delete_ticket' ticket.id %}" class="btn btn-danger">Delete Ticket</a>
+                    <a href="{% url 'update_ticket' ticket.id %}" class="btn btn-info">Edit Ticket</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="ticket-card">
+            <div class="ticket-card-body">
+                <p>You don't have any ticket</p>
+            </div>
+        </div>
+    {% endif %}
+    <a href="{% url 'add_ticket' %}" class="btn btn-primary">Open Ticket</a>
+</div>
+
+{% endblock %}

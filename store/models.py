@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
-# Create your models here.
 
+# Create your models here.
 class Customer(models.Model):
 	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
 	name = models.CharField(max_length=200, null=True)
@@ -18,6 +18,7 @@ class Customer(models.Model):
 		if created:
 			Customer.objects.create(user=instance, name=instance.username, email=instance.email)
 
+
 class Product(models.Model):
 	PRODUCT_TYPE = [
 		('elec', 'elec'),
@@ -27,20 +28,17 @@ class Product(models.Model):
 	]
 
 	name = models.CharField(max_length=200)
-	price = models.FloatField()
+	price = models.DecimalField(max_digits=8, decimal_places=2)
 	descripsion = models.TextField(max_length=200, blank=True)
-	category = models.ForeignKey("Category", related_name='product', on_delete=models.CASCADE , blank=True, null=True)
+	category = models.ForeignKey("Category", related_name='products', on_delete=models.CASCADE , blank=True, null=True)
 	tag = models.ManyToManyField("Tag", related_name='products', blank=True)
 	digital = models.BooleanField(default=False,null=True, blank=True)
 	image = models.ImageField(null=True, blank=True)
 	type = models.CharField(max_length=50 , choices=PRODUCT_TYPE , default='elec')
 
 	
-
 	def __str__(self):
 		return self.name
-
-    
 
 	@property
 	def imageURL(self):
@@ -50,6 +48,7 @@ class Product(models.Model):
 			url = ''
 		return url
 	
+
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -58,7 +57,11 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.amount} - {self.date}"
+
     
+
+
+
 
 class Category(models.Model):
 	name = models.CharField(max_length=300)

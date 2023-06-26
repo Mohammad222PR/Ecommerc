@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .forms import TicketForm, TicketAnswerForm
+from .forms import TicketandupdateForm
 from .models import *
 from store.models import *
+from store.utils import *
+from django.contrib import messages
 
 # Create your views here.
 
@@ -10,71 +12,84 @@ from store.models import *
 
 class TicketView(View):
     template_name = 'support/ticket.html'
-    
-    def get(self, request, user_id):
-        # فیلتر کردن تیکت‌های مربوط به کاربر جاری
-        tickets = User.objects.get(id=user_id)
-        
+
+    def get(self, request,user_id):
+        data = cartData(request)
+        cartItems = data['cartItems']
+
+        tickets = Ticket.objects.filter(user_id=user_id) 
+
         context = {
             'tickets': tickets,
+            'cartItems': cartItems,
         }
         return render(request, self.template_name, context)
 
 class DetailTicket(View):
     def get(self, request, t_id):
+        data = cartData(request)
+        cartItems = data['cartItems']
         ticket = Ticket.objects.get(id=t_id)
         answers = ticket.ticketanswer_set.filter(ticket=ticket)  
         context = {
             'ticket': ticket,
-            'answers': answers
+            'answers': answers,
+            'cartItems':cartItems
         }
         return render(request, 'support/detail.html', context)
 class AddTicketView(View):
-    form_class = TicketForm
+    form_class = TicketandupdateForm
     tempalte_name = 'support/ticket_add.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect('home:home')
+        if not request.user.is_authenticated:
+            return redirect('store')
         return super().dispatch(request, *args, **kwargs)
         
     def get(self, request):
+        data = cartData(request)
+        cartItems = data['cartItems']
         form = self.form_class()
 
         context = {
-            'form':form,
+            'form': form,
+            'cartItems': cartItems
         }
-        return render(request,self.tempalte_name, context)
+        return render(request, self.tempalte_name, context)
 
 
     def post(self, request):
-        form = self.form_class(request.POST,  request.FIELS)
+        user = request.user
+        form = self.form_class(request.POST)
         if form.is_valid():
-            new_t = form.save(commit = False)
+            new_t = form.save(commit=False)
             new_t.user = request.user
             new_t.body = form.cleaned_data['body']
             new_t.save()
-        if 'images' in form.cleaned_data:
-            new_t.images = form.cleaned_data['images']
-            new_t.save()
-            return redirect('detail.html', new_t.id)
+            return redirect('ticket_user', user.id)
         
         context = {
-            'form':form
+            'form': form
         }
-        return render(request,self.tempalte_name, context)
-    
+        return render(request, self.tempalte_name, context)
 
-class AddTicketAnswerView(View):
-    form_class = TicketAnswerForm
-    template_name = 'support/answer_add.html'
+
+class TicketUpdateView(View):
+    form_class = TicketandupdateForm
+    template_name = 'support/update.html'
+
+    def setup(self, request, *args, **kwargs):
+        self.ticket_instance = Ticket.objects.get(id = kwargs['t_id'])
+        return super().setup(request, *args, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect('home:home')
+        if not request.user.is_authenticated:
+            return redirect('store')
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, t_id):
+        
+        ticket = self.ticket_instance
         ticket = Ticket.objects.get(id = t_id)
         form = self.form_class(instance=ticket)
         context = {
@@ -83,22 +98,22 @@ class AddTicketAnswerView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, t_id):
-        form = self.form_class(request.POST)
+        user = request.user 
+        ticket = self.ticket_instance
+        ticket = Ticket.objects.get(id = t_id)
+        form = self.form_class(request.POST, instance = ticket)
         if form.is_valid():
-            new_answer = form.save(commit=False)
-            new_answer.ticket = Ticket.objects.get(id=t_id)
-            new_answer.name = request.user
-            new_answer.body = form.cleaned_data['body']
-            new_answer.save()
+            form.save()
+            messages.success(request,'Youre profile updatd','success')
+            return redirect('ticket_user',user.id)
+        
+    
 
-            # Update ticket complete status to True
-            ticket = new_answer.ticket
-            ticket.complete = True
-            ticket.save()
-
-            return redirect('detail_ticket', t_id)
-
-        context = {
-            'form': form,
-        }
-        return render(request, self.template_name, context)
+class DeleteTicketView(View):
+    def get(self, request, t_id):
+        user = request.user
+        ticket = Ticket.objects.get(id = t_id)
+        if ticket.user.id == request.user.id:
+            ticket.delete()
+            messages.success(request,'Yore Ticket Delete!','success')
+            return redirect('ticket_user', user.id)

@@ -1,0 +1,39 @@
+{% extends 'main.html' %}
+    {% block content %}
+    <style>
+        .ticket-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        .ticket-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+        }
+    
+        .ticket-body {
+        font-size: 18px;
+        color: #555;
+        line-height: 1.6;
+        }
+    </style>
+    
+    <div class="ticket-container">
+        <h1 class="ticket-title">Youre Ticket</h1>
+        <p class="ticket-title">{{ ticket.title }}</p>
+        <br>
+        <p class="ticket-body">{{ ticket.body }}</p>
+        {% if ticket.complete %}
+        <h3>Answer</h3>
+        <h6>username: {{ ticket.ticketanswer_set.first.admin_name }}</h6>
+       <h6> Answer:<p>{{ticket.ticketanswer_set.first.body}}</p></h6>
+        {% endif %}
+
+    </div>
+  {% endblock %}

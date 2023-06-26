@@ -1,4 +1,5 @@
 </head>
+
 <body>
     {% load static %}
 
@@ -19,17 +20,21 @@
 				<a class="nav-link" href="{% url 'about' %}">About <span class="sr-only">(current)</span></a>
 			  </li>
 			  
-			  
+			{% if request.user.is_authenticated %}
 				  <li class="nav-item active">
-					<a class="nav-link" href="#">Ticket <span class="sr-only">(current)</span></a>
+					<a class="nav-link" href="{% url 'ticket_user' user.id %}">Ticket <span class="sr-only">(current)</span></a>
+					{% endif %}
 				  </li>
+				</ul>
+				</div>
+				
+				
 		{% if request.user.is_authenticated %}
-	   <li class="nav-item active">
-		<a  class="btn btn-warning" href="{% url 'account:user_profile' request.user.id %}">Profile <span class="sr-only">(current)</span></a>
-	  </li>
+		<div class="form-inline my-2 my-lg-0">
+			<a href="{% url 'account:user_profile' request.user.id %}"class="btn btn-warning">Profile</a>
+	
+</div>
 	  {% else %}
-	  </ul>
-	</div>
 	    <div class="form-inline my-2 my-lg-0">
 	     	<a href="{% url 'account:user_login' %}"class="btn btn-warning">Login</a>
 	     	{% endif %}
@@ -39,5 +44,5 @@
 	    	<p id="cart-total">{{cartItems}}</p>
 			</div>
 	    </div>
-	  </div>
+	
 	</nav>

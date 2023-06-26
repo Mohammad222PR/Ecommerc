@@ -1,0 +1,116 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+/* Updated styles for ticket form */
+.ticket-form-container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.ticket-form-card {
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 40px;
+  margin-bottom: 20px;
+}
+
+.ticket-form-card-header {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+
+.ticket-form-card-header h2 {
+  font-size: 24px;
+  color: #333;
+}
+
+.ticket-form-card-body {
+  margin-bottom: 20px;
+}
+
+.ticket-form-card-body label {
+  display: block;
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.ticket-form-card-body input[type="text"],
+.ticket-form-card-body textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.ticket-form-actions {
+  margin-top: 20px;
+}
+
+.ticket-form-actions input[type="submit"] {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.ticket-form-actions input[type="submit"]:hover {
+  background-color: #0069d9;
+}
+
+.ticket-form-actions input[type="button"] {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  background-color: #dc3545;
+  color: #fff;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.ticket-form-actions input[type="button"]:hover {
+  background-color: #c82333;
+}
+</style>
+
+<div class="ticket-form-container">
+  <div class="ticket-form-card">
+    <div class="ticket-form-card-header">
+      <h2>Create a Ticket</h2>
+    </div>
+    <div class="ticket-form-card-body">
+      <form action="" method="post" novalidate>
+        {% csrf_token %}
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="body" rows="5" required></textarea>
+        
+        <div class="ticket-form-actions">
+          <input type="submit" value="Submit" >
+          <a href="{% url 'ticket_user' user.id %}"><input type="button" value="Cancel"></a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

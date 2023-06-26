@@ -1,0 +1,64 @@
+{% extends 'main.html' %}
+{% block content %}
+<h1>ویرایش تیکت</h1>
+<form method="post" class="update-form">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_title">عنوان:</label>
+        {{ form.title }}
+    </div>
+    <div class="form-group">
+        <label for="id_body">متن:</label>
+        {{ form.body }}
+    </div>
+    <button type="submit" class="btn-update">بروزرسانی</button>
+</form>
+<style>
+    .update-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn-update {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-update:hover {
+  background-color: #45a049;
+}
+
+</style>
+{% endblock %}

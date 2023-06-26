@@ -4,17 +4,33 @@ import json
 import datetime
 from .models import * 
 from .utils import cookieCart, cartData, guestOrder
+from django.core.paginator import Paginator
+
+
+from django.core.paginator import Paginator
+
+from django.core.paginator import Paginator
 
 def store(request):
-	data = cartData(request)
+    data = cartData(request)
+    cartItems = data['cartItems']
+    order = data['order']
+    items = data['items']
 
-	cartItems = data['cartItems']
-	order = data['order']
-	items = data['items']
-
-	products = Product.objects.all()
-	context = {'products':products, 'cartItems':cartItems}
-	return render(request, 'store/store.html', context)
+    products = Product.objects.all()
+    
+    paginator = Paginator(products, 3)  # تعداد محصولات در هر صفحه
+    
+    page_number = request.GET.get('page')
+    page_list = paginator.get_page(page_number)
+    
+    context = {
+        'products': page_list,
+        'cartItems': cartItems,
+        'page_list': page_list,  # اضافه کردن page_list به context
+    }
+    
+    return render(request, 'store/store.html', context)
 
 def detail(request, product_id):
     data = cartData(request)
@@ -24,16 +40,11 @@ def detail(request, product_id):
     items = data['items']
     product = Product.objects.get(id=product_id)
     tags = Tag.objects.all().filter(products=product)
-	
-    product_quantity = 0
-    for item in items:
-        if item.product.id == product.id:
-            product_quantity = item.quantity
-            break
+
+   
 
     context = {
         'product': product,
-        'product_quantity': product_quantity,
         'cartItems': cartItems,
         'items': items,
         'order': order,
@@ -84,11 +95,6 @@ def updateItem(request):
 		orderItem.delete()
 
 	return JsonResponse('Item was added', safe=False)
-
-from django.http import JsonResponse
-from .models import Order, OrderItem, ShippingAddress, Transaction
-import json
-import datetime
 
 def processOrder(request):
     transaction_id = datetime.datetime.now().timestamp()

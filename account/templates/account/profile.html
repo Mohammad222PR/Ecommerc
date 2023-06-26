@@ -1,24 +1,139 @@
 {% extends 'main.html' %}
-    {% block content %}
 
-       <div class="card">
+{% block content %}
+<style>
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f1f1f1;
+  padding: 30px 0;
+}
+
+.card {
+  width: 80%;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 40px;
+}
+
+.card-header {
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+}
+
+.card-header h1 {
+  font-size: 24px;
+  color: #333;
+}
+
+.profile-info {
+  margin-bottom: 40px;
+}
+
+.profile-info p {
+  font-size: 18px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.profile-actions {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.profile-actions a {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.quantity {
+  font-size: 14px;
+  color: #888;
+}
+
+.btn {
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.btn-primary {
+  background-color: #09b258;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #088f4d;
+}
+
+.btn-danger {
+  background-color: #ff5346;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #ff3c30;
+}
+
+.btn-info {
+  background-color: #00a8ff;
+  color: #fff;
+}
+
+.btn-info:hover {
+  background-color: #0095db;
+}
+
+.btn-secondary {
+  background-color: #555;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #444;
+}
+
+</style>
+
+<div class="container">
+    <div class="card">
+      <div class="card-header">
         <h1>Profile</h1>
-        {% if user.avatar %}
-        <img src="{{ user.avatar.url }}" width="100" height="100" style="border-radius: 50%;" alt="Avatar">   
-        {% endif %}
-        <p class="card-body"> <p>bio : {{user.bio}}</p> <br>  <p>username : {{user.username}} <br> email : {{user.email}}</p></p> 
-        <div class="card">
-            
-          
-            
-        
+      </div>
+      <div class="card-body">
+        <div class="profile-info">
+          <p>Username: {{ user.username }}</p>
+          <p>Email: {{ user.email }}</p>
+        </div>
         {% if request.user.id == user.id %}
-        
-        <div class="col-md-2">
-                <a href="{%url 'account:user_profileupdate' user.id %}"    class="btn btn-info" >Update Profile</a>
-                
-                <a href="{% url 'account:user_logout' %}" class="btn btn-danfer">Logout</a>
-            </div>
-                {% endif %}
+        <div class="profile-actions">
+          <a href="{% url 'account:user_profileupdate' user.id %}" class="btn btn-primary">Edit Profile</a>
+          <br>
+          <a href="{% url 'account:user_logout' %}" class="btn btn-danger">Logout</a>
+          <br>
+          <a href="{% url 'account:user_transactions' user.id %}" class="btn btn-info">Transactions</a>
+          <p>Transaction count: {{ user.transaction_set.count }}</p>
+          <br>
+          <a href="{% url 'cart' %}" class="btn btn-secondary">Cart</a>
+          <p class="quantity"><br>Your cart: items:{{ order.get_cart_items }}</p>
+        </div>
+        <a href="{% url 'ticket_user' user.id %}" class="btn btn-info">Ticket</a>
+
+        {% endif %}
+      </div>
     </div>
-    {% endblock %}
+  </div>
+{% endblock %}

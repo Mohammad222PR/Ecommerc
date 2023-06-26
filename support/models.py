@@ -7,11 +7,15 @@ class Ticket(models.Model):
     title = models.CharField(max_length=200)
     body = models.TextField(max_length=200)
     complete = models.BooleanField(default=False)
-    images = models.ImageField(upload_to='blogs/', null = True)
 
     def __str__(self):
-        return self.user
+        return self.title
+
+    
 class TicketAnswer(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
-    name = models.ForeignKey(User, on_delete=models.CASCADE)
+    admin_name = models.CharField(max_length=200, blank=True)
     body = models.TextField(max_length=200)
+
+    def __str__(self):
+        return f'{self.ticket}'

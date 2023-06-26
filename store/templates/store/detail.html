@@ -23,36 +23,35 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
-  $(document).ready(function() {
-    // AJAX request for adding to cart
-    $('.update-cart').click(function(event) {
-      event.preventDefault();
-      var product_id = $(this).attr("data-product");
-      var action = $(this).attr("data-action");
-      var quantity = parseInt($('#quantity').text());
-      var desired_quantity = 5; // تعداد مورد نظر
-      $.ajax({
-        url: "{% url 'update_item' %}",
-        type: "POST",
-        data: {
-          'product_id': product_id,
-          'action': action,
-          'quantity': desired_quantity // استفاده از تعداد مورد نظر
-        },
-        headers: {
-          'X-CSRFToken': '{{ csrf_token }}'
-        },
-        success: function(response) {
-          $('#quantity').text(response.quantity);
-          alert("You've successfully added the product to your cart!");
-        },
-        error: function(xhr, textStatus, errorThrown) {
-          console.log(xhr.responseText);
-        }
-      });
-      return false;
+$(document).ready(function() {
+  // AJAX request for adding to cart
+  $('.update-cart').click(function(event) {
+    event.preventDefault();
+    var product_id = $(this).attr("data-product");
+    var action = $(this).attr("data-action");
+    var desired_quantity = 5; // تعداد مورد نظر
+    $.ajax({
+      url: "{% url 'update_item' %}",
+      type: "POST",
+      data: {
+        'product_id': product_id,
+        'action': action,
+        'quantity': desired_quantity // استفاده از تعداد مورد نظر
+      },
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      success: function(response) {
+        $('#cart-quantity').text(response.cartItems);
+        alert("محصول با موفقیت به سبد خرید اضافه شد!");
+      },
+      error: function(xhr, textStatus, errorThrown) {
+        console.log(xhr.responseText);
+      }
     });
+    return false;
   });
+});
 </script>
 <style>
     .container {
